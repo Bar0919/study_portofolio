@@ -1,0 +1,23 @@
+# Reference Data (Large files)
+reference/
+
+# C++ Build Artifacts
+*.o
+model_tests
+tests/repro_fix
+tests/repro_fix_hgmrf
+tests/all_models_test
+
+# WASM Output
+frontend/src/wasm/denoise_module.js
+frontend/src/wasm/denoise_module.wasm
+
+# Node.js
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# OS files
+.DS_Store
+Thumbs.db

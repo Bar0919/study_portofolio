@@ -1,0 +1,23 @@
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "5173:5173"
+      - "5174:5174" # Viteのポートフォールバック用
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Windows/Macのボリュームマウント時のファイル変更検知用
+    # C++のビルド(Wasm生成) -> NPMインストール -> サーバー起動 を全自動化
+    command: >
+      bash -c "
+      echo '🏗️ Building C++ to WebAssembly...' &&
+      make &&
+      echo '📦 Installing Node dependencies...' &&
+      cd frontend &&
+      npm install &&
+      echo '🚀 Starting Vite Dev Server...' &&
+      npm run dev -- --host 0.0.0.0 --port 5173
+      "
