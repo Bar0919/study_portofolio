@@ -11,6 +11,7 @@ import { ConfigPanel } from './components/ConfigPanel';
 import { HistorySidebar } from './components/HistorySidebar';
 import { InsightCard } from './components/InsightCard';
 import { CompareCard } from './components/CompareCard';
+import { AwardsSection } from './components/AwardsSection';
 
 ChartJS.defaults.color = '#94a3b8';
 ChartJS.defaults.borderColor = '#1e293b';
@@ -138,7 +139,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const img = new Image();
-    img.src = `/samples/${sampleImg}.bmp`;
+    img.src = `${import.meta.env.BASE_URL}samples/${sampleImg}.bmp`;
     img.onload = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -423,6 +424,7 @@ const App: React.FC = () => {
               </div>
             </div>
           )}
+          <AwardsSection />
         </main>
         
         {mode === 'single' && <HistorySidebar history={history} onClear={() => setHistory([])} />}

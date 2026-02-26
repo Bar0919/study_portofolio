@@ -37,18 +37,17 @@ export const ALGORITHM_METADATA: Record<string, {
       challenge: 'エッジ数と同じ次元を持つ巨大な補助変数を追加した代償として、計算コストが膨大になり実用が困難であるという課題があります。',
       math: 'E_{\\mathrm{TV}}(\\bm{x}) = \\frac{\\lambda}{2}\\sum_{i \\in V} x_i^2 + \\alpha \\sum_{\\{i,j\\} \\in E} |x_i - x_j|' 
     },
-    'LC-MRF': { 
-      name: 'LC-MRF',
-      tagline: 'Log-Cosh Markov Random Field',
-      stage: '修士の研究',
-      desc: '平滑化関数に「ln cosh関数」を採用した最終提案モデルです。エッジ保持と計算の容易さを高次元で両立しました。', 
-      problem: 'エッジ保存と計算可能性を両立するためにrTV-MRFで導入した高次元の補助変数が、膨大な計算コストを引き起こす問題を解決する必要がありました。',
-      solution: '全域で微分可能な ln cosh 関数を採用しました。補助変数を一切使用せず、エッジ保存と高速な最適化を単一のエネルギー関数で実現しました。',
-      challenge: '原画像が完全に未知な環境下において、ノイズ除去性能に大きく影響するスケーリングパラメータ s を自動探索・調整する手法の確立が次なる課題です。',
-      math: 'E_{\\mathrm{LC}}(\\bm{x}) = \\frac{\\lambda}{2}\\sum_{i \\in V} x_i^2 + \\alpha \\sum_{\\{i,j\\} \\in E} \\ln\\cosh(s(x_i - x_j))' 
-    }
-  
-};
+      'LC-MRF': { 
+        name: 'LC-MRF',
+        tagline: 'Log-Cosh Markov Random Field',
+        stage: '修士の研究',
+        desc: '平滑化関数に「ln cosh関数」を採用した最終提案モデルです。エッジ保持と計算の容易さを高次元で両立しました。本手法は情報処理学会（IPSJ）全国大会において「学生奨励賞」を受賞しています。', 
+        problem: 'エッジ保存と計算可能性を両立するためにrTV-MRFで導入した高次元の補助変数が、膨大な計算コストを引き起こす問題を解決する必要がありました。',
+        solution: '全域で微分可能な ln cosh 関数を採用しました。補助変数を一切使用せず、エッジ保存と高速な最適化を単一のエネルギー関数で実現しました。',
+        challenge: '原画像が完全に未知な環境下において、ノイズ除去性能に大きく影響するスケーリングパラメータ s を自動探索・調整する手法の確立が次なる課題です。',
+        math: 'E_{\\mathrm{LC}}(\\bm{x}) = \\frac{\\lambda}{2}\\sum_{i \\in V} x_i^2 + \\alpha \\sum_{\\{i,j\\} \\in E} \\ln\\cosh(s(x_i - x_j))' 
+      }
+    };
 
 export const PARAM_HELP: Record<string, string> = {
   'lambda': '精度行列の対角成分 (λ)。',
