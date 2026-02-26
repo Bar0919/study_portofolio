@@ -5,12 +5,17 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/study_portofolio/', // 🚀 GitHub Pages のリポジトリ名に合わせる
   plugins: [
     react(),
     wasm(),
-    basicSsl() // 🚀 ローカルHTTPSの有効化
+    basicSsl()
   ],
+  build: {
+    target: 'esnext' // 🚀 WASMのトップレベル await 等を許可
+  },
   worker: {
+    format: 'es', // 🚀 Worker 内での ESM 形式を保証
     plugins: () => [
       wasm()
     ]
