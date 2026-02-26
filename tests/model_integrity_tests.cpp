@@ -111,12 +111,36 @@ void run_lcmrf_integrity() {
     print_result(stats);
 }
 
+void run_rtvmrf_integrity() {
+    int n = 64 * 64;
+    DenoiseEngine engine(64, 64);
+    vector<uint8_t> orig(n, 128), noisy(n);
+    for(int i=0; i<n; ++i) {
+        orig[i] = (i < n/2) ? 100 : 200;
+        noisy[i] = orig[i] + (rand()%11-5);
+    }
+    engine.set_input(orig.data(), noisy.data(), n);
+
+    TestStats stats; stats.name = "rTV-MRF";
+    RTVMRFParams p; p.max_iter = 10; p.is_learning = false;
+    
+    engine.rtv_mrf(p, [&](const IterationResult& res) {
+        if (res.iteration == 0) stats.initial_psnr = res.psnr;
+        if (res.iteration > 0) {
+            stats.final_psnr = res.psnr;
+        }
+    });
+    stats.psnr_improved = (stats.final_psnr > stats.initial_psnr);
+    print_result(stats);
+}
+
 int main() {
     cout << "=== MRF Model Integrity Test Suite ===" << endl;
     srand(42);
     
     run_gmrf_integrity();
     run_hgmrf_integrity();
+    run_rtvmrf_integrity();
     run_lcmrf_integrity();
 
     return 0;

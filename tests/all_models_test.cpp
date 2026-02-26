@@ -42,9 +42,9 @@ int main() {
         });
     });
 
-    run_test("TV-MRF", [](DenoiseEngine& engine) {
-        TVMRFParams p; p.max_iter = 1; p.is_learning = false;
-        engine.tv_mrf(p, [](const IterationResult& res) {
+    run_test("rTV-MRF", [](DenoiseEngine& engine) {
+        RTVMRFParams p; p.max_iter = 1; p.is_learning = false;
+        engine.rtv_mrf(p, [](const IterationResult& res) {
             std::cout << "  Iter " << res.iteration << ": PSNR=" << res.psnr << std::endl;
         });
     });
