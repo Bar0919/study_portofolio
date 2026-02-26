@@ -6,7 +6,7 @@
 ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 
-本プロジェクトは、学士・修士課程（R4〜R6年度）の研究成果である**「マルコフ確率場 (MRF) を用いたロバストな確率的画像復元モデル」**を、C++ と WebAssembly (Wasm) を用いてブラウザ上でリアルタイムに高速実行・比較できるインタラクティブなポートフォリオです。
+本プロジェクトは、学士・修士課程（R4〜R6年度）の研究成果である**「マルコフ確率場 (MRF) を用いたロバストな確率的画像復元モデル」**を、C++ と WebAssembly (Wasm) を用いてブラウザ上でリアルタイムに高速実行・比較できるインタラクティブな解析プラットフォームです。
 
 🏆 **本研究の一部は、情報処理学会 (IPSJ) 全国大会において「学生奨励賞」を受賞しています。**
 
@@ -15,116 +15,71 @@
 ## 🌟 概要 (Overview)
 
 画像ノイズ除去において、従来のガウス型マルコフ確率場 (GMRF) は、エッジ（輪郭）に対して過剰な平滑化を行ってしまうという課題がありました。
-本プロジェクトでは、この問題を解決するための複数の発展的な確率モデル（HGMRF, TV-MRF, LC-MRF）を C++ でスクラッチ実装し、Wasm を通じて React フロントエンドに統合しています。
+本プロジェクトでは、この問題を解決するための学術的系譜（GMRF → HGMRF → rTV-MRF → LC-MRF）を辿りながら、各モデルの推定ロジックを C++ でスクラッチ実装しています。
 
-### 実装アルゴリズム
+### 研究の系譜と実装アルゴリズム
 
-1.  **GMRF (Baseline):** 差の二乗による平滑化を行う基本モデル。ガウス・ザイデル法による高速なMAP推定。
-2.  **HGMRF (Hierarchical GMRF):** バイアスパラメータを超事前分布で周辺化した階層モデル。本研究で発見した「更新途中の画像の方がPSNRが高い」という課題を解決するため、**「尤度差分の移動平均(M=7)」を用いた早期終了 (Early Stopping) アルゴリズム** を搭載。
-3.  **TV-MRF:** 絶対値誤差を用いる Total Variation 正則化。Split Bregman 法による補助変数を用いた交互最適化。
-4.  **LC-MRF (Proposed):** 平滑化関数に $\ln\cosh$ を用いることで、エッジを保存するロバスト性を実現した提案手法。微分可能であり勾配法による最適化が可能。
+1.  **GMRF (Base Study):** 連続値 MRF の基盤。高速だがエッジがぼやける課題を持つ。
+2.  **HGMRF (Bachelor Research):** 未知バイアス成分を周辺化した階層型モデル。尤度ピーク検出による早期終了機能を搭載。
+3.  **rTV-MRF (Master Research - Evolution 1):** 絶対値誤差を用いる TV 正則化を、Split Bregman 法に基づき確率的に緩和（Relaxed）したモデル。
+4.  **LC-MRF (Master Research - Proposed):** 平滑化関数に $\ln\cosh$ を採用し、エッジ保存と高速な勾配ベース推定を両立した本研究の最終到達点。
+
+---
+
+## 🔬 解析・検証機能 (Analysis & Verification)
+
+単なるデモに留まらず、アルゴリズムの数学的整合性を検証するための強力な機能を備えています。
+
+*   **Mathematical Monitoring:**
+    - **尤度監視モード (`verify_likelihood`)**: パラメータ推定において周辺対数尤度が単調増加しているかをリアルタイムに監視。
+    - **パラメータ追跡**: $\alpha$ (平滑化), $\lambda$ (精度), $\sigma^2$ (分散) などの内部パラメータの収束推移をコンソールに出力。
+*   **Visual Inspection:**
+    - **レンズ型拡大鏡 (Lens Magnifier)**: マウス追従により、エッジの保存状態やノイズ除去の質をピクセル単位で詳細にインスペクト可能。
+    - **SSIM Error Locality**: 局所的な復元精度をヒートマップで可視化し、構造的な劣化箇所を特定。
+*   **Integrated Research Insight:**
+    - 各モデルの「先行研究の課題」「提案による解決」「今後の課題」およびエネルギー関数の数式を一箇所に集約。
 
 ---
 
 ## 🛠 技術スタック (Tech Stack)
 
-単にライブラリを使用するのではなく、「アルゴリズムの数式からの自作」と「ブラウザの限界性能を引き出すエンジニアリング」に焦点を当てています。
-
-*   **演算コア (Logic):** `C++17`
-*   **Wasm コンパイラ:** `Emscripten` (`Embind`)
-*   **フロントエンド:** `React` (TypeScript) + `Vite`
-*   **スタイリング:** `Tailwind CSS v4` (Dark Theme)
+*   **演算コア:** `C++17` (ガウス・ザイデル法、勾配法、Split Bregman法、MALAサンプリング)
+*   **Wasm ブリッジ:** `Emscripten` (`Embind`)
+*   **フロントエンド:** `React 18` (TypeScript) + `Vite` (コンポーネント分割による高保守性)
 *   **可視化:** `Canvas API`, `Chart.js`, `react-compare-slider`, `KaTeX`
-*   **インフラ:** `Docker` (All-in-One Dev Container), `GitHub Actions` (CI/CD)
+*   **インフラ:** `Docker` (Multi-stage build for Wasm/Node.js), `GitHub Actions`
 
 ---
 
-## 🔥 エンジニアリングのハイライト (Key Achievements)
+## 🧪 テストと品質保証 (Testing)
 
-データサイエンス・機械学習の実務における「信頼性」と「パフォーマンス」を担保するため、以下の最適化を行っています。
-
-*   **数学的に厳密なモデル評価:**
-    ノイズ画像ではなく、「真の原画像」を用いた正確な **PSNR / SSIM** の計算を C++ 側で実装。局所的な復元精度を視覚化する **SSIM Heatmap (RGBA)** をリアルタイムで生成します。
-*   **Zero-Allocation Loop & Zero-Copy 転送:**
-    C++の反復処理（イテレーション）のループ内から `std::vector` のメモリ確保 (`new`/`delete`) を完全に排除し、処理速度を劇的に向上。また、計算結果は `Module.HEAPU8` のバッファを介して JavaScript へ Zero-Copy で渡され、メモリリークを防いでいます。
-*   **数値計算の堅牢性 (Numeric Integrity):**
-    すべての除算において微小値 $\epsilon$ (`1e-10`) によるクリッピングを行い、**0除算 (Zero-Division) を物理的に回避**。
-*   **論文の数学的バグ修正 (Algorithm Stability):**
-    論文内の数式（タイポ）に起因する分散パラメータの符号誤りを特定・修正し、学習中の PSNR 急落を解消。数学的導出に基づきモデルの収束性を担保しました。
-*   **Web Worker による非同期処理:**
-    重い行列演算や勾配計算を Web Worker に分離。UI のフリーズを防ぎ、イテレーションごとの進捗（%）やエネルギー関数の減少推移を滑らかに描画します。
-
----
-
-## 🧪 テストと品質保証 (Testing & Quality Assurance)
-
-アルゴリズムの信頼性を担保するため、ネイティブ C++ 環境での自動テストを導入しています。
+数学的整合性を担保するための厳密なテストスイートを搭載しています。
 
 ```bash
-# C++ エンジンの数学的整合性テストを実行
-make test
+# C++ エンジンの整合性テスト (MAP収束・尤度増加・PSNR改善) を実行
+g++ -O3 -std=c++17 tests/model_integrity_tests.cpp cpp/engine/*.cpp cpp/utils/*.cpp -o integrity_test && ./integrity_test
 ```
 
-### テスト項目
-*   **GMRF/HGMRF 収束テスト**: 学習プロセスにおいて分散パラメータが崩壊せず、PSNR が維持・向上することを確認。
-*   **数値精度テスト**: 0除算回避ロジックや、画素値のクランプ処理の正確性を検証。
-*   **全モデル実行テスト**: 各 MRF 手法がクラッシュせずに計算を完了できることを網羅的にチェック。
-
-### CI/CD パイプライン
-GitHub Actions により、`main` ブランチへのプッシュごとに以下の処理が自動実行されます：
-1.  **C++ Unit Tests**: ネイティブ環境でのアルゴリズム検証。
-2.  **Wasm Build**: Emscripten による最新エンジンのビルド。
-3.  **Frontend Build & Deploy**: React アプリのビルドと GitHub Pages への自動デプロイ。
+### 検証項目
+*   **MAP Convergence**: 勾配ステップごとにエネルギー関数（負の対数事後確率）が単調減少することを確認。
+*   **Likelihood Monotonicity**: パラメータ推定（MLE）において周辺対数尤度が最大化に向かっていることを確認。
+*   **Parameter Stability**: rTV-MRF における初期ノイズ分散との動的同期機能の検証。
 
 ---
 
-## 🚀 実行方法 (How to Run Locally)
+## 🚀 実行方法 (How to Run)
 
-Docker がインストールされた環境であれば、以下のコマンド一つで「C++ から Wasm へのコンパイル」と「React 開発サーバーの起動」が全自動で行われます。
+Docker環境があれば、ビルドから起動まで自動で行われます。
 
 ```bash
-# プロジェクトのルートディレクトリで実行
-docker-compose up --build
+docker compose up --build
 ```
 
-起動後、ブラウザで `https://localhost:5173/` (または表示される URL) にアクセスしてください。
+起動後、 `http://localhost:5173/` にアクセスしてください。
 
-### 手動で起動する場合 (Node.js & Emscripten)
-
-```bash
-# 1. Wasm のビルド (Emscripten環境下)
-make
-
-# 2. React の起動
-cd frontend
-npm install
-npm run dev -- --host
-```
+*   **SINGLE MODE**: 特定モデルの詳細解析（尤度監視、拡大鏡、履歴記録）。
+*   **COMPARE MODE**: 複数モデルの並列比較。各カード内で個別のパラメータチューニングが可能。
 
 ---
 
-## 📁 ディレクトリ構成 (Structure)
-
-保守性と拡張性を意識し、関心事ごとにディレクトリを分割しています。
-
-```text
-.
-├── .github/workflows/    # CI/CD パイプライン (GitHub Pages自動デプロイ)
-├── cpp/                  # C++ 演算エンジン
-│   ├── engine/           # 各MRFアルゴリズム (gmrf.cpp, hgmrf.cpp, etc.)
-│   └── utils/            # 評価指標(PSNR/SSIM)、0除算回避、整合性テスト
-├── frontend/             # React プロジェクト
-│   ├── src/
-│   │   ├── components/   # 比較ビューア、チャート、パラメータUI
-│   │   └── workers/      # Web Worker (Wasm非同期実行)
-├── reference/            # 論文データ
-│   ├── R4_bachelors_thesis/  # 学士論文 (HGMRF基礎)
-│   └── R6_masters_thesis/    # 修士論文 (LC-MRFとロバスト平滑化)
-├── tests/                # C++ ユニットテスト
-├── docker-compose.yml    # All-in-One 開発環境
-└── Makefile              # Wasm ビルドスクリプト
-```
-
----
-
-*This project is built to demonstrate the integration of rigorous mathematical modeling with high-performance web engineering.*
+*This project integrates rigorous mathematical derivation with high-performance web engineering to bridge the gap between academic research and interactive analysis.*

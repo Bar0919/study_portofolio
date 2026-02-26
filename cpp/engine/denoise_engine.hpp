@@ -35,6 +35,7 @@ struct HGMRFParams {
     double eta_lambda = 1.0e-12;
     double eta_alpha = 5.0e-8;
     double eta_gamma2 = 5.0e-8;
+    bool verify_likelihood = false;
 };
 
 struct LCMRFParams {
@@ -56,9 +57,9 @@ struct LCMRFParams {
     int t_dot_max = 10;
 };
 
-struct TVMRFParams {
+struct RTVMRFParams {
     double lambda = 1.0e-7;
-    double alpha = 0.5;
+    double alpha = 0.05;
     double sigma_sq = 100.0;
     int max_iter = 50;
     bool is_learning = false;
@@ -69,11 +70,10 @@ public:
     DenoiseEngine(int width, int height);
     void set_input(const uint8_t* original_arr, const uint8_t* noisy_arr, int size);
     
-    // アルゴリズムのエントリポイント
     void gmrf(const GMRFParams& p, std::function<void(const IterationResult&)> on_step);
     void hgmrf(const HGMRFParams& p, std::function<void(const IterationResult&)> on_step);
     void lc_mrf(const LCMRFParams& p, std::function<void(const IterationResult&)> on_step);
-    void tv_mrf(const TVMRFParams& p, std::function<void(const IterationResult&)> on_step);
+    void rtv_mrf(const RTVMRFParams& p, std::function<void(const IterationResult&)> on_step);
     
     void get_output(uint8_t* out_data);
     void get_initial_ssim_heatmap(uint8_t* out_rgba);

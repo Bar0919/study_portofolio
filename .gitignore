@@ -4,6 +4,9 @@ reference/
 # C++ Build Artifacts
 *.o
 model_tests
+hgmrf_check
+hgmrf_monitor
+model_integrity_tests
 tests/repro_fix
 tests/repro_fix_hgmrf
 tests/all_models_test

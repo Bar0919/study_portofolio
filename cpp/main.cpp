@@ -29,16 +29,16 @@ public:
         return val(typed_memory_view(heatmap_buffer.size(), heatmap_buffer.data()));
     }
     void runGMRF(GMRFParams p, val onStep) {
-        engine.gmrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim); });
+        engine.gmrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim, res.current_task); });
     }
     void runLCMRF(LCMRFParams p, val onStep) {
-        engine.lc_mrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim); });
+        engine.lc_mrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim, res.current_task); });
     }
     void runHGMRF(HGMRFParams p, val onStep) {
-        engine.hgmrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim); });
+        engine.hgmrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim, res.current_task); });
     }
-    void runTVMRF(TVMRFParams p, val onStep) {
-        engine.tv_mrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim); });
+    void runRTVMRF(RTVMRFParams p, val onStep) {
+        engine.rtv_mrf(p, [&](const IterationResult& res) { onStep(res.iteration, res.energy, res.psnr, res.ssim, res.current_task); });
     }
 private:
     DenoiseEngine engine;
@@ -58,7 +58,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .field("sigma_sq", &HGMRFParams::sigma_sq).field("gamma_sq", &HGMRFParams::gamma_sq)
         .field("max_iter", &HGMRFParams::max_iter).field("is_learning", &HGMRFParams::is_learning)
         .field("eta_lambda", &HGMRFParams::eta_lambda).field("eta_alpha", &HGMRFParams::eta_alpha)
-        .field("eta_gamma2", &HGMRFParams::eta_gamma2);
+        .field("eta_gamma2", &HGMRFParams::eta_gamma2).field("verify_likelihood", &HGMRFParams::verify_likelihood);
 
     value_object<LCMRFParams>("LCMRFParams")
         .field("lambda", &LCMRFParams::lambda).field("alpha", &LCMRFParams::alpha)
@@ -70,10 +70,10 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .field("n_pri", &LCMRFParams::n_pri).field("n_post", &LCMRFParams::n_post)
         .field("t_hat_max", &LCMRFParams::t_hat_max).field("t_dot_max", &LCMRFParams::t_dot_max);
 
-    value_object<TVMRFParams>("TVMRFParams")
-        .field("lambda", &TVMRFParams::lambda).field("alpha", &TVMRFParams::alpha)
-        .field("sigma_sq", &TVMRFParams::sigma_sq).field("max_iter", &TVMRFParams::max_iter)
-        .field("is_learning", &TVMRFParams::is_learning);
+    value_object<RTVMRFParams>("RTVMRFParams")
+        .field("lambda", &RTVMRFParams::lambda).field("alpha", &RTVMRFParams::alpha)
+        .field("sigma_sq", &RTVMRFParams::sigma_sq).field("max_iter", &RTVMRFParams::max_iter)
+        .field("is_learning", &RTVMRFParams::is_learning);
 
     class_<WasmEngine>("WasmEngine")
         .constructor<int, int>()
@@ -82,7 +82,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .function("runGMRF", &WasmEngine::runGMRF)
         .function("runLCMRF", &WasmEngine::runLCMRF)
         .function("runHGMRF", &WasmEngine::runHGMRF)
-        .function("runTVMRF", &WasmEngine::runTVMRF)
+        .function("runRTVMRF", &WasmEngine::runRTVMRF)
         .function("getSSIMHeatmap", &WasmEngine::getSSIMHeatmap)
         .function("getInitialSSIMHeatmap", &WasmEngine::getInitialSSIMHeatmap);
 }

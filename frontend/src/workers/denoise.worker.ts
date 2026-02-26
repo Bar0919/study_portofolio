@@ -72,7 +72,7 @@ self.onmessage = async (e) => {
         } else if (algorithm === 'HGMRF') {
           engine.runHGMRF(params, onStep);
         } else if (algorithm === 'rTV-MRF') {
-          engine.runTVMRF(params, onStep);
+          engine.runRTVMRF(params, onStep);
         }
       } catch (e: any) {
         if (e.message === 'ABORTED') {
