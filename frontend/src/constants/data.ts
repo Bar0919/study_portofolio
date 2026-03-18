@@ -87,4 +87,4 @@ export const THESIS_DEFAULTS: Record<string, any> = {
   }
 };
 
-export const ALGORITHMS = ['gMRF', 'HGMRF', 'rTV-MRF', 'LC-MRF'];
+export const ALGORITHMS = ['GMRF', 'HGMRF', 'rTV-MRF', 'LC-MRF'];
